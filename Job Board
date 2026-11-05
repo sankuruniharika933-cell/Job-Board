@@ -1,0 +1,510 @@
+import 'package:flutter/material.dart';
+
+void main() {
+  runApp(const JobBoardApp());
+}
+
+class JobBoardApp extends StatelessWidget {
+  const JobBoardApp({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      debugShowCheckedModeBanner: false,
+      title: 'Job Board',
+      theme: ThemeData(
+        primarySwatch: Colors.indigo,
+        useMaterial3: true,
+        scaffoldBackgroundColor: const Color(0xFFF5F6FA),
+      ),
+      home: const JobListScreen(),
+    );
+  }
+}
+
+// Job Model
+class Job {
+  final String role;
+  final String company;
+  final String location;
+  final String salary;
+  final String type;
+  final String description;
+  final List<String> requirements;
+
+  const Job({
+    required this.role,
+    required this.company,
+    required this.location,
+    required this.salary,
+    required this.type,
+    required this.description,
+    required this.requirements,
+  });
+}
+
+// Sample Job Data
+final List<Job> jobs = [
+  Job(
+    role: 'Flutter Developer',
+    company: 'Google',
+    location: 'Hyderabad',
+    salary: '₹5 - 8 LPA',
+    type: 'Full Time',
+    description:
+        'We are looking for a talented Flutter Developer '
+        'to develop attractive and responsive mobile applications. '
+        'The candidate should have knowledge of Dart, Flutter, '
+        'Firebase and REST APIs.',
+    requirements: [
+      'Knowledge of Flutter and Dart',
+      'Understanding of Firebase',
+      'Knowledge of REST APIs',
+      'Problem-solving skills',
+      'Good communication skills',
+    ],
+  ),
+  Job(
+    role: 'Python Developer',
+    company: 'Infosys',
+    location: 'Bangalore',
+    salary: '₹4 - 7 LPA',
+    type: 'Full Time',
+    description:
+        'We need a Python Developer to build and maintain '
+        'software applications. Candidates should understand '
+        'Python programming and database management.',
+    requirements: [
+      'Python programming',
+      'SQL and databases',
+      'Basic knowledge of Django',
+      'Logical thinking',
+    ],
+  ),
+  Job(
+    role: 'Web Developer',
+    company: 'TCS',
+    location: 'Chennai',
+    salary: '₹3 - 6 LPA',
+    type: 'Full Time',
+    description:
+        'Join our web development team to create modern '
+        'websites and responsive applications using HTML, '
+        'CSS and JavaScript.',
+    requirements: [
+      'HTML and CSS',
+      'JavaScript',
+      'React basics',
+      'Responsive web design',
+    ],
+  ),
+  Job(
+    role: 'UI/UX Designer',
+    company: 'Wipro',
+    location: 'Pune',
+    salary: '₹4 - 6 LPA',
+    type: 'Internship',
+    description:
+        'We are searching for a creative UI/UX Designer '
+        'to design user-friendly interfaces and improve '
+        'the user experience of digital products.',
+    requirements: [
+      'Figma knowledge',
+      'UI/UX design principles',
+      'Creative thinking',
+      'Wireframing and prototyping',
+    ],
+  ),
+  Job(
+    role: 'Java Developer',
+    company: 'Accenture',
+    location: 'Mumbai',
+    salary: '₹5 - 9 LPA',
+    type: 'Full Time',
+    description:
+        'Looking for a Java Developer to develop and '
+        'maintain enterprise applications using Java '
+        'and related technologies.',
+    requirements: [
+      'Core Java',
+      'Object-oriented programming',
+      'SQL knowledge',
+      'Spring Boot basics',
+    ],
+  ),
+];
+
+// Job List Screen
+class JobListScreen extends StatefulWidget {
+  const JobListScreen({super.key});
+
+  @override
+  State<JobListScreen> createState() => _JobListScreenState();
+}
+
+class _JobListScreenState extends State<JobListScreen> {
+  String searchText = '';
+
+  @override
+  Widget build(BuildContext context) {
+    final filteredJobs = jobs.where((job) {
+      return job.role.toLowerCase().contains(
+                searchText.toLowerCase(),
+              ) ||
+          job.company.toLowerCase().contains(
+                searchText.toLowerCase(),
+              ) ||
+          job.location.toLowerCase().contains(
+                searchText.toLowerCase(),
+              );
+    }).toList();
+
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text(
+          'Job Board',
+          style: TextStyle(
+            fontWeight: FontWeight.bold,
+            color: Colors.white,
+          ),
+        ),
+        backgroundColor: Colors.indigo,
+        centerTitle: true,
+      ),
+
+      body: Padding(
+        padding: const EdgeInsets.all(16),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            const Text(
+              'Find Your Dream Job!',
+              style: TextStyle(
+                fontSize: 24,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+
+            const SizedBox(height: 8),
+
+            const Text(
+              'Explore the latest job opportunities.',
+              style: TextStyle(color: Colors.grey),
+            ),
+
+            const SizedBox(height: 20),
+
+            // Search Bar
+            TextField(
+              decoration: InputDecoration(
+                hintText: 'Search jobs or companies...',
+                prefixIcon: const Icon(Icons.search),
+                filled: true,
+                fillColor: Colors.white,
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(12),
+                  borderSide: BorderSide.none,
+                ),
+              ),
+              onChanged: (value) {
+                setState(() {
+                  searchText = value;
+                });
+              },
+            ),
+
+            const SizedBox(height: 20),
+
+            Text(
+              'Available Jobs (${filteredJobs.length})',
+              style: const TextStyle(
+                fontSize: 18,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+
+            const SizedBox(height: 12),
+
+            Expanded(
+              child: filteredJobs.isEmpty
+                  ? const Center(
+                      child: Text('No jobs found!'),
+                    )
+                  : ListView.builder(
+                      itemCount: filteredJobs.length,
+                      itemBuilder: (context, index) {
+                        final job = filteredJobs[index];
+
+                        return Card(
+                          color: Colors.white,
+                          elevation: 3,
+                          margin: const EdgeInsets.only(
+                            bottom: 14,
+                          ),
+                          shape: RoundedRectangleBorder(
+                            borderRadius:
+                                BorderRadius.circular(14),
+                          ),
+                          child: ListTile(
+                            contentPadding:
+                                const EdgeInsets.all(14),
+                            leading: CircleAvatar(
+                              backgroundColor:
+                                  Colors.indigo.shade100,
+                              child: const Icon(
+                                Icons.work,
+                                color: Colors.indigo,
+                              ),
+                            ),
+                            title: Text(
+                              job.role,
+                              style: const TextStyle(
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                            subtitle: Padding(
+                              padding:
+                                  const EdgeInsets.only(top: 8),
+                              child: Column(
+                                crossAxisAlignment:
+                                    CrossAxisAlignment.start,
+                                children: [
+                                  Text(job.company),
+                                  const SizedBox(height: 5),
+                                  Row(
+                                    children: [
+                                      const Icon(
+                                        Icons.location_on,
+                                        size: 15,
+                                      ),
+                                      const SizedBox(width: 4),
+                                      Text(job.location),
+                                    ],
+                                  ),
+                                  const SizedBox(height: 5),
+                                  Text(
+                                    job.salary,
+                                    style: const TextStyle(
+                                      color: Colors.green,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                            trailing: const Icon(
+                              Icons.arrow_forward_ios,
+                              size: 17,
+                            ),
+                            onTap: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) =>
+                                      JobDetailScreen(job: job),
+                                ),
+                              );
+                            },
+                          ),
+                        );
+                      },
+                    ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+// Job Details Screen
+class JobDetailScreen extends StatelessWidget {
+  final Job job;
+
+  const JobDetailScreen({
+    super.key,
+    required this.job,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('Job Details'),
+        backgroundColor: Colors.indigo,
+        foregroundColor: Colors.white,
+      ),
+
+      body: SingleChildScrollView(
+        padding: const EdgeInsets.all(20),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Center(
+              child: CircleAvatar(
+                radius: 38,
+                backgroundColor: Colors.indigo.shade100,
+                child: const Icon(
+                  Icons.business_center,
+                  size: 40,
+                  color: Colors.indigo,
+                ),
+              ),
+            ),
+
+            const SizedBox(height: 18),
+
+            Center(
+              child: Text(
+                job.role,
+                textAlign: TextAlign.center,
+                style: const TextStyle(
+                  fontSize: 24,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            ),
+
+            const SizedBox(height: 8),
+
+            Center(
+              child: Text(
+                job.company,
+                style: const TextStyle(
+                  fontSize: 18,
+                  color: Colors.indigo,
+                ),
+              ),
+            ),
+
+            const SizedBox(height: 25),
+
+            const Divider(),
+
+            const Text(
+              'Job Information',
+              style: TextStyle(
+                fontSize: 20,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+
+            const SizedBox(height: 15),
+
+            detailRow(Icons.location_on, 'Location', job.location),
+            detailRow(Icons.currency_rupee, 'Salary', job.salary),
+            detailRow(Icons.access_time, 'Job Type', job.type),
+
+            const SizedBox(height: 25),
+
+            const Text(
+              'Full Job Description',
+              style: TextStyle(
+                fontSize: 20,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+
+            const SizedBox(height: 10),
+
+            Text(
+              job.description,
+              style: const TextStyle(
+                fontSize: 16,
+                height: 1.6,
+              ),
+            ),
+
+            const SizedBox(height: 25),
+
+            const Text(
+              'Requirements',
+              style: TextStyle(
+                fontSize: 20,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+
+            const SizedBox(height: 10),
+
+            ...job.requirements.map(
+              (requirement) => Padding(
+                padding: const EdgeInsets.only(bottom: 10),
+                child: Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const Icon(
+                      Icons.check_circle,
+                      color: Colors.green,
+                      size: 20,
+                    ),
+                    const SizedBox(width: 10),
+                    Expanded(
+                      child: Text(
+                        requirement,
+                        style: const TextStyle(fontSize: 15),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+
+            const SizedBox(height: 30),
+
+            // Apply Button
+            SizedBox(
+              width: double.infinity,
+              height: 50,
+              child: ElevatedButton(
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.indigo,
+                  foregroundColor: Colors.white,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                ),
+                onPressed: () {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(
+                      content: Text(
+                        'Application feature coming soon!',
+                      ),
+                    ),
+                  );
+                },
+                child: const Text(
+                  'Apply Now',
+                  style: TextStyle(fontSize: 18),
+                ),
+              ),
+            ),
+
+            const SizedBox(height: 20),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget detailRow(IconData icon, String title, String value) {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 15),
+      child: Row(
+        children: [
+          Icon(icon, color: Colors.indigo),
+          const SizedBox(width: 12),
+          Text(
+            '$title: ',
+            style: const TextStyle(
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+          Expanded(
+            child: Text(value),
+          ),
+        ],
+      ),
+    );
+  }
+}
